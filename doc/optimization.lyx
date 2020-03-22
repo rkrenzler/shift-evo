@@ -1,0 +1,560 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language ngerman
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style german
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Dienstplanoptimierung
+\begin_inset Newline newline
+\end_inset
+
+version 2
+\end_layout
+
+\begin_layout Date
+22 März 2020
+\end_layout
+
+\begin_layout Author
+Stefan Mann und Ruslan Krenzler
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\GesamtScore}{S_{\text{total}}}
+{S_{\text{total}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ArbeitszeitenScore}{S_{\text{time}}}
+{S_{\text{time}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\CovidScore}{S_{\text{COVID}}}
+{S_{\text{COVID}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\MitarbeiterWunschScore}{S_{\text{wish}}}
+{S_{\text{wish}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\FluktuationScore}{S_{\text{team}}}
+{S_{\text{team}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Die Herausforderungen
+\end_layout
+
+\begin_layout Itemize
+optimale Dienstpläne zu berechnen ist sehr schwer (NP-schwer)
+\end_layout
+
+\begin_layout Itemize
+es gibt keine Garantie, dass eine optimale Lösung in der Realität funktionieren
+ wird, da kurzfristige Ausfälle die gesamte Planung durcheinander bringen
+ können
+\end_layout
+
+\begin_layout Itemize
+aufgrund einer Notsituationen erwarten wir sogar Verletzungen von Regeln,
+ wie Arbeitszeit, Ruhephasen und Personalmangel
+\end_layout
+
+\begin_layout Itemize
+aufgrund zu vieler Parameter fällt es schwer den Überblick zu behalten und
+ gute Lösungen zu finden.
+ Wir müssen gleichzeitig viele diverse Prioritäten berücksichtigen: Überstunden,
+ Personalmangel, Ansteckungsgefahr, Belastung der Mitarbeiter.
+ - am Ende möchte der Mensch das letzte Wort haben und den Plan nach seinen
+ Wünschen gestalten 
+\end_layout
+
+\begin_layout Subsection*
+Szenario
+\end_layout
+
+\begin_layout Standard
+Personalplanerin versucht für den kommenden Monat geeignete Mitarbeiter
+ in sein bestehendes Schichtmodell einzutragen.
+ Sie möchte Arbeitszeitenregelungen, Ruhephasen, Wünsche der Mitarbeiter,
+ und potentiellen Corona-Status des Mitarbeiters berücksichtigen 
+\end_layout
+
+\begin_layout Subsection*
+Idee
+\end_layout
+
+\begin_layout Standard
+Wir nutzen ein Score System.
+ Jeder noch nicht eingeplanter Mitarbeiter, erhält einen Score zwischen
+ 0 und 1.
+ Dieser Score berücksichtigt Arbeitszeiten, Ruhephasen, Ansteckunsgefahr
+ und zukünftigen Personalstand.
+ Je höher der Score ist, desto besser ist der Mitarbeiter für die jeweilige
+ Schicht geeignet.
+ 
+\end_layout
+
+\begin_layout Standard
+Dieser Score wird aus Gründen der Anschaulichkeit in ein Ampelsystem umgewandelt
+, so dass die Personalerin schnell die geeignetsten Kandidaten sowie Grenzfälle
+ sehen kann.
+ Sie wählt einen Kandidaten und das System berechnet Scores für restlichen
+ Mitarbeiter erneut.
+ Schritt für Schritt füllt sie interaktiv gestützt die Pläne aus.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Algorithmische Realisierung
+\end_layout
+
+\begin_layout Standard
+Wir nennen den Score, der im Ampelsystem dargestellt, einen Gesamtscore
+ 
+\begin_inset Formula $\GesamtScore$
+\end_inset
+
+.
+ Er setzt sich zusammen aus thematisch getrennten Teilscores.
+ Diese Teilscores sind auch Werte zwischen 0 und 1.
+ Zusammen multipliziert ergeben sie den Gesamtscore.
+ 
+\end_layout
+
+\begin_layout Standard
+Wir nutzen folgende Teilscores: Arbeitszeiten-Score 
+\begin_inset Formula $\ArbeitszeitenScore$
+\end_inset
+
+, COVID-19-Score 
+\begin_inset Formula $\CovidScore$
+\end_inset
+
+, Fluktuations-Score 
+\begin_inset Formula $\FluktuationScore$
+\end_inset
+
+ und Mitarbeiterwünsche-Score 
+\begin_inset Formula $\MitarbeiterWunschScore$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Arbeitszeiten-Score
+\end_layout
+
+\begin_layout Standard
+Der Arbeitszeiten-Score 
+\begin_inset Formula $\ArbeitszeitenScore$
+\end_inset
+
+ beschreibt, ob bzw.
+ wie gut die relevanten Arbeitszeiten- und Freischichtenregelungen eingehalten
+ werden.
+ Er ist Null, falls aus Arbeitsrechtlichen Gründen eine Einteilung des Mitarbeit
+ers nicht möglich ist.
+ Er ist 1, falls eine Einteilung problemlos stattfinden kann.
+ Je größer der Score desto mehr Zeit steht der Mitarbeiter zur Verfügung.
+ Mit folgender Darstellung bilden wir das gewünschte Verhalten ab:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\ArbeitszeitenScore\coloneqq\begin{cases}
+1-\frac{current\_hours}{max\_hours} & \text{gesetzliche Vorgaben erfüllt},\\
+0 & \text{gesetzliche Vorgaben verletzt.}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+current_hours
+\emph default
+ ist die Anzahl von bereits geleisteten Arbeitsstunden, 
+\emph on
+max_hours
+\emph default
+ ist die Anzahl der Arbeitstunden, die Mitarbeiter insgesamt machen darf.
+\end_layout
+
+\begin_layout Standard
+Überstunden können durch Erhöhung des Wertes 
+\emph on
+max_hours
+\emph default
+ berücksichtigt werden.
+ 
+\end_layout
+
+\begin_layout Standard
+Mitarbeiterwünsche_Score gesamt_Score 
+\end_layout
+
+\begin_layout Standard
+Interaktives: Dienstplan_Score Modell:
+\end_layout
+
+\begin_layout Section
+Wahrscheinlichkeits Model für Covid-Score
+\end_layout
+
+\begin_layout Standard
+Eine Pflegerin hat direkte Kontakte zu 
+\begin_inset Formula $n$
+\end_inset
+
+ Personen und indirekte Kontakte zu 
+\begin_inset Formula $m$
+\end_inset
+
+ Personen mit unbekannten Covid-19 Statusen.
+ Sie hat dazu noch Kontakte zu 
+\begin_inset Formula $k$
+\end_inset
+
+ Personen mit nachgewiesenen Covid-19.
+ Wie hoch ist die Wahrscheinlichkeit, dass die Pflegerin gesund bleibt.
+\end_layout
+
+\begin_layout Paragraph*
+Mathematisches Model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $G\in\{0,1\}$
+\end_inset
+
+ ist eine Zufallsvariable.
+ Sie beschreibt Gesundheitszustand von Pflegerin.
+ 
+\begin_inset Formula $G=1$
+\end_inset
+
+ bedeutet die Pflegerin ist gesund.
+ 
+\begin_inset Formula $G=0$
+\end_inset
+
+ bedeutet die Pflegerin ist infiziert.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $X_{i}\in\{0,1\}$
+\end_inset
+
+ ist eine Zufallsvariable.
+ Sie beschreibt, ob der 
+\begin_inset Formula $i$
+\end_inset
+
+-te direkte Kontakt infiziert ist.
+ 
+\begin_inset Formula $X_{i}=1$
+\end_inset
+
+ bedeutet, dass direkter Kontakt 
+\begin_inset Formula $i$
+\end_inset
+
+ gesund ist.
+ 
+\begin_inset Formula $X_{i}=0$
+\end_inset
+
+ bedeutet, dieser Kontakt ist infiziert.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Y_{i}\in\{0,1\}$
+\end_inset
+
+ ist eine Zufallsvariable.
+ Sie beschreibt, ob 
+\begin_inset Formula $A$
+\end_inset
+
+ von dem 
+\begin_inset Formula $i$
+\end_inset
+
+-ten Kontakt mit Unbekannten Status infiziert wurde.
+ 
+\begin_inset Formula $Y_{i}=1$
+\end_inset
+
+ bedeutet keine Infektion.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Z_{i}\in\{0,1\}$
+\end_inset
+
+ ist eine Zufallsvariable.
+ Sie beschreibt, ob 
+\begin_inset Formula $Y$
+\end_inset
+
+ von einem 
+\begin_inset Formula $i$
+\end_inset
+
+-ten Kontakt mit Covid infiziert wurde.
+ 
+\begin_inset Formula $Z_{i}=1$
+\end_inset
+
+ bedeutet keine Infektion.
+\end_layout
+
+\begin_layout Standard
+Wir bezeichnen die Wahrscheinlichkeit Covid zu haben 
+\begin_inset Formula $P(X_{i}=0)=:p$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Wir bezeichnen die Wahrscheinlichkeit von einer infizierte Person angesteckt
+ zu werden 
+\begin_inset Formula $P(Y_{i}=0|X_{i}=0)=:r$
+\end_inset
+
+.
+ Weil 
+\begin_inset Formula $Z_{i}$
+\end_inset
+
+ Covid hat, gilt auch 
+\begin_inset Formula $P(Z_{i}=0)=r$
+\end_inset
+
+.
+ Ansteckung von einer gesunden Person ist nicht möglich.
+\end_layout
+
+\begin_layout Standard
+Wir nehmen an, dass Infizierungen unabhängig und gleich wahrscheinlich sind
+ (i.i.d).
+ Dann ist die Wahrscheinlichkeit von einer Person 
+\begin_inset Formula $i$
+\end_inset
+
+ mit einem unbekannten Covid-Status eingesteckt zu werden 
+\begin_inset Formula 
+\[
+P(Y_{i}=0)=P(Y_{i}=0\cap X_{i}=0)+\underbrace{P(Y_{i}=0\cap X_{i}=1)}_{=0(\text{unmöglich)}}=P(Y_{i}=0|X_{i}=0)P(X_{i}=0)=p\cdot r.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Wahrscheinlichkeit, dass keine Ansteckung nach diesem Kontakt findet
+ ist Gegenteil davon
+\begin_inset Formula 
+\[
+P(Y_{i}=1)=1-p\cdot r.
+\]
+
+\end_inset
+
+Wegen Unabhängigkeitsannahmen ist die Wahrscheinlichkeit gesund zu bleiben
+ nach 
+\begin_inset Formula $n$
+\end_inset
+
+ Kontakte mit Personen mit unbekannten Cnvid-Statusen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(Y_{1}=1\cap\ldots\cap Y_{n}=1)=P(Y_{1}=1)\cdot P(Y_{n}=1)=(1-p\cdot r)^{n}.
+\]
+
+\end_inset
+
+Nach 
+\begin_inset Formula $k$
+\end_inset
+
+ Kontakten mit Personen mit Covid ist die Wahrscheinlichkeit gesund zu bleiben
+\begin_inset Formula 
+\[
+P(Z_{1}=1\cap\ldots\cap Z_{k}=0)=(1-r)^{k}.
+\]
+
+\end_inset
+
+Wenn man sowohl unbekannte Kontakte als auch Covid-Kontakte berücksichtigt,
+ bleibt die Pflegerin nur dann gesund, wenn alle Ansteckungsversuche fehlgeschla
+gen sind.
+ Dann ist
+\begin_inset Formula 
+\[
+\{G=1\}=\{Y_{1}=1\cap\ldots\cap Y_{n}=1\cap Z_{1}=1\cap\ldots\cap Z_{k}=0\}.
+\]
+
+\end_inset
+
+Somit ist wegen Unabhängigkeit
+\begin_inset Formula 
+\[
+P(G=1)=P(Y_{1}=1\cap\ldots\cap Y_{n}=1)\cdot P(Z_{1}=1\cap\ldots\cap Z_{k}=0)=(1-p\cdot r)^{n}\cdot(1-r)^{k}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+Zusammengenfassung:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $p$
+\end_inset
+
+ ist die Wahrscheinlichkeit dass ein Kontakt Covid hat.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r$
+\end_inset
+
+ ist die Wahrscheinlichkeit von einer infizierte Person angesteckt zu werden.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $n$
+\end_inset
+
+ ist die Anzahl von Kontakten mit Personen mit unbekanntem Covid-Status.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $k$
+\end_inset
+
+ ist die Anzahl von Kontakten mit Personen mit Covid.
+\end_layout
+
+\begin_layout Itemize
+Wahrscheinlichkeit gesund zu bleiben ist
+\begin_inset Formula 
+\[
+(1-p\cdot r)^{n}\cdot(1-r)^{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Indirkete Kontakte mit Personen mit unbekannten Status müssen nicht berücksichti
+g werden.
+\end_layout
+
+\end_body
+\end_document
