@@ -82,11 +82,12 @@ Dienstplanoptimierung
 \begin_inset Newline newline
 \end_inset
 
-version 2
+Version 3
 \end_layout
 
 \begin_layout Date
-22 März 2020
+22.
+ März 2020
 \end_layout
 
 \begin_layout Author
@@ -124,6 +125,70 @@ Stefan Mann und Ruslan Krenzler
 \end_inset
 
 
+\begin_inset FormulaMacro
+\newcommand{\GesamtWeight}{W_{\text{total}}}
+{W_{\text{total}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ArbeitszeitenWeight}{W_{\text{time}}}
+{W_{\text{time}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\CovidWeight}{W_{\text{COVID}}}
+{W_{\text{COVID}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\MitarbeiterWunschWeight}{W_{\text{wish}}}
+{W_{\text{wish}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\FluktuationWeight}{W_{\text{team}}}
+{W_{\text{team}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Einführung
+\end_layout
+
+\begin_layout Standard
+Einen Dienstplan für einen Krankenhaus manuell zu erstellen ist schwierig.
+ In einer Krisensituation, wenn Personal und Zeit knapp sind und die Situation
+ sich ständig ändert, ist das noch schwieriger.
+ Um das Krankenhaus bei dieser Aufgabe zu unterstützen, haben wir verschiedene
+ Algorithmen entworfen.
+ Im Besonderen haben wir die aktuelle Lage der Covid19 Pandemie berücksichtigt.
+\end_layout
+
+\begin_layout Standard
+Ziel dieser Arbeit ist es ein interaktives Verfahren zur Erstellung eines
+ Dienstplanes zur Verfügung zu stellen.
+ Interaktiv heißt, der Personalverantwortliche bekommt nicht einfach nur
+ einen automatisch generierten Dienstplan als Lösung präsentiert sondern
+ kann die Auswahl vollständig kontrollieren.
+ Dabei wird er durch ein intelligentes Scoring System unterstützt, welches
+ ihm hilft gute Entscheidungen zu treffen.
+\end_layout
+
+\begin_layout Standard
+Wir wollen uns dabei eng an ein konkretes Beispiel aus dem Krankenhausalltag
+ halten und dort die Monatsplanung der Pfleger einer Station modellieren.
+ Dies ist eine deutlich abgespeckte Version des allgemeinen Problems, jedoch
+ zur Skizzierung der Gedanken geeignet.
+ Es bleibt dem Leser überlassen, die folgenden Ideen und Anregungen welche
+ innerhalb von 48h während des #WirVsVirus-Hackathon2020 entstanden und
+ verfasst worden sind frei zu benutzen und weiter zu entwickeln.
+ 
 \end_layout
 
 \begin_layout Subsection*
@@ -154,6 +219,10 @@ aufgrund zu vieler Parameter fällt es schwer den Überblick zu behalten und
  Wünschen gestalten 
 \end_layout
 
+\begin_layout Itemize
+Regelungen und Wünsche zu formalisieren ist ein langwieriger Prozess
+\end_layout
+
 \begin_layout Subsection*
 Szenario
 \end_layout
@@ -162,7 +231,11 @@ Szenario
 Personalplanerin versucht für den kommenden Monat geeignete Mitarbeiter
  in sein bestehendes Schichtmodell einzutragen.
  Sie möchte Arbeitszeitenregelungen, Ruhephasen, Wünsche der Mitarbeiter,
- und potentiellen Corona-Status des Mitarbeiters berücksichtigen 
+ und potentiellen Covid-Status des Mitarbeiters berücksichtigen 
+\end_layout
+
+\begin_layout Section
+Iterativer Algorithmus
 \end_layout
 
 \begin_layout Subsection*
@@ -173,7 +246,7 @@ Idee
 Wir nutzen ein Score System.
  Jeder noch nicht eingeplanter Mitarbeiter, erhält einen Score zwischen
  0 und 1.
- Dieser Score berücksichtigt Arbeitszeiten, Ruhephasen, Ansteckunsgefahr
+ Dieser Score berücksichtigt Arbeitszeiten, Ruhephasen, Ansteckungsgefahr
  und zukünftigen Personalstand.
  Je höher der Score ist, desto besser ist der Mitarbeiter für die jeweilige
  Schicht geeignet.
@@ -203,7 +276,7 @@ Wir nennen den Score, der im Ampelsystem dargestellt, einen Gesamtscore
 .
  Er setzt sich zusammen aus thematisch getrennten Teilscores.
  Diese Teilscores sind auch Werte zwischen 0 und 1.
- Zusammen multipliziert ergeben sie den Gesamtscore.
+ Zusammenaddiert und gewichtet ergeben sie den Gesamtscore.
  
 \end_layout
 
@@ -237,8 +310,33 @@ Der Arbeitszeiten-Score
 \end_inset
 
  beschreibt, ob bzw.
- wie gut die relevanten Arbeitszeiten- und Freischichtenregelungen eingehalten
- werden.
+ wie gut die relevanten Ar
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+-
+\end_layout
+
+\end_inset
+
+beits
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+-
+\end_layout
+
+\end_inset
+
+zeiten- und Freischichtenregelungen eingehalten werden.
  Er ist Null, falls aus Arbeitsrechtlichen Gründen eine Einteilung des Mitarbeit
 ers nicht möglich ist.
  Er ist 1, falls eine Einteilung problemlos stattfinden kann.
@@ -261,15 +359,15 @@ ers nicht möglich ist.
 \end_layout
 
 \begin_layout Standard
-
+In dieser Formel ist
 \emph on
-current_hours
+ current_hours
 \emph default
- ist die Anzahl von bereits geleisteten Arbeitsstunden, 
+ die Anzahl von bereits geleisteten Arbeitsstunden und 
 \emph on
 max_hours
 \emph default
- ist die Anzahl der Arbeitstunden, die Mitarbeiter insgesamt machen darf.
+ ist die Anzahl der Arbeitsstunden, die Mitarbeiter insgesamt machen darf.
 \end_layout
 
 \begin_layout Standard
@@ -289,8 +387,282 @@ Mitarbeiterwünsche_Score gesamt_Score
 Interaktives: Dienstplan_Score Modell:
 \end_layout
 
+\begin_layout Subsubsection*
+COVID-19-Score
+\end_layout
+
+\begin_layout Standard
+Der Covid19_Score 
+\begin_inset Formula $\CovidScore$
+\end_inset
+
+ spiegelt die Wahrscheinlichkeit wieder, dass der Mitarbeiter sich bei Schichtüb
+ernahme nicht mit Covid19 infiziert.
+ Er ist 1, wenn wir 100%-tiger Sicherheit sagen können, der Mitarbeiter
+ ist infiziert.
+ Er ist 0, wenn wir mit 100%-tiger Sicherheit sagen können, der Mitarbeiter
+ ist nicht infiziert.
+ Wir nutzen dazu die Formel
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\CovidScore\coloneqq(1-p\cdot r)^{n}\cdot(1-r)^{k}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $p$
+\end_inset
+
+ ist die Wahrscheinlichkeit dass ein Kontakt Covid hat.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $r$
+\end_inset
+
+ ist die Wahrscheinlichkeit von einer infizierten Person angesteckt zu werden.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $n$
+\end_inset
+
+ ist die Anzahl von Kontakten mit Personen mit unbekanntem Covid-Status.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $k$
+\end_inset
+
+ ist die Anzahl von Kontakten mit Personen mit Covid.
+\end_layout
+
+\begin_layout Standard
+Diese Formel basiert auf einem Wahrscheinlichkeitsmodel im Kapitel 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Wahrscheinlichkeits-Model-für"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Fluktuationscore
+\end_layout
+
+\begin_layout Standard
+Der Fluktuationsscore 
+\begin_inset Formula $\FluktuationScore$
+\end_inset
+
+ soll die Präferenz für konstante Teams während der Planung berücksichtigen.
+ Er ist sehr klein, falls der Mitarbeiter mit vielen Kollegen in Kontakt
+ stand während der Planung.
+ Er ist jedoch nie niemals Null, da er keinen entscheidenden Einfluss auf
+ den Gesamtscore haben darf.
+ Er ist 1, falls der Mitarbeiter mit noch keinem weiteren Kollegen zusammengearb
+eitet hat.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\FluktuationScore:=\frac{employees-contacts}{employees}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+employees
+\emph default
+ ist die Gesamtanzahl aller Mitarbeiter, 
+\emph on
+contacts
+\emph default
+ ist die Gesamtzahl aller Kontakte zu anderen Mitarbeitern im derzeitigen
+ Plan
+\end_layout
+
+\begin_layout Standard
+Bemerkung: Da ein Mitarbeiter nicht mit sich selbst in Kontakt steht, folgt
+ Fluktuationsscore ungleich Null.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Mitarbeiterwünsche-Score
+\end_layout
+
+\begin_layout Standard
+Der Mitarbeiterwunsch-Score 
+\begin_inset Formula $\MitarbeiterWunschScore$
+\end_inset
+
+ berücksichtigt den Wunsch des Mitarbeiter an einer Schicht zu arbeiten
+ oder nicht zu arbeiten.
+ Es ist ist eine Zahl zwischen 0 und 1.
+ Der Wert 1 bedeutet, dass der Mitarbeiter an dieser Schicht arbeiten möchte,
+ der Wert 0 bedeutet, dass der Mitarbeiter an dieser Schicht lieber nicht
+ an dieser Schicht arbeiten möchte.
+ Dieser Wert muss manuell eingetragen werden.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Gesamtscore
+\end_layout
+
+\begin_layout Standard
+Der Gesamtscore 
+\begin_inset Formula $\GesamtScore$
+\end_inset
+
+ fasst Teilscores zusammen und berücksichtigt deren Wichtigkeit.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\GesamtScore:=\frac{\ArbeitszeitenWeight\ArbeitszeitenScore+\CovidWeight\CovidScore+\FluktuationWeight\FluktuationScore+\MitarbeiterWunschWeight\MitarbeiterWunschScore}{\ArbeitszeitenWeight+\CovidWeight+\FluktuationWeight+\MitarbeiterWunschWeight}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Gewichtungen 
+\begin_inset Formula $\ArbeitszeitenWeight$
+\end_inset
+
+, 
+\begin_inset Formula $\CovidWeight$
+\end_inset
+
+ , 
+\begin_inset Formula $\FluktuationWeight$
+\end_inset
+
+ und 
+\begin_inset Formula $\MitarbeiterWunschWeight$
+\end_inset
+
+ werden vom Anwender bestimmt.
+\end_layout
+
 \begin_layout Section
-Wahrscheinlichkeits Model für Covid-Score
+Andere Algorithmen
+\end_layout
+
+\begin_layout Standard
+Man kann auch versuchen, diesen Dienstplan mit Hilfe von evolutionären Algorithm
+en zu optimieren.
+ Dazu wird jeder persönlicher Plan als eine Folge von Zahlen 
+\begin_inset Formula $0,1,2$
+\end_inset
+
+ oder 
+\begin_inset Formula $3$
+\end_inset
+
+ dargestellt: 
+\begin_inset Formula $0$
+\end_inset
+
+ bedeutet frei, 
+\begin_inset Formula $1$
+\end_inset
+
+ bedeutet Frühschicht, 
+\begin_inset Formula $2$
+\end_inset
+
+ bedeutet Spätschicht und 
+\begin_inset Formula $3$
+\end_inset
+
+ bedeutet Nachtschicht.
+ Ein Dienstplan besteht aus einer Folge von persönlichen Plänen.
+ Ein Dienstplan für drei Tage und vier Personen kann zum Beispiel so aussehen:
+\end_layout
+
+\begin_layout Standard
+[3,3,0,
+\begin_inset Formula $\quad$
+\end_inset
+
+1,1,0
+\begin_inset Formula $\quad$
+\end_inset
+
+,2,2,1,
+\begin_inset Formula $\quad$
+\end_inset
+
+1,1,0]
+\end_layout
+
+\begin_layout Standard
+Dieser Plan bedeutet: Der erste Mitarbeiter arbeitet zwei Nachgeschichte
+ und hat dann frei, der zweite Mitarbeiter arbeite zwei Frühschichten und
+ dann hat frei und so weiter.
+\end_layout
+
+\begin_layout Standard
+Der evolutionäre Algorithmus benötigt eine Kostenfunktion.
+ Wir haben dazu die Anzahl von fehlenden Mitarbeiten in dem gesamten Plan
+ gewählt und Extrakosten für Verletzung von Arbeitsregeln addiert.
+\end_layout
+
+\begin_layout Standard
+Der evolutionäre Algorithmus wird dann versuchen den Dienstplan so zu ändern,
+ dass die Gesamtkosten nieder sind.
+ In unserem Fall bedeutet es, dass die Anzahl der fehlenden Mitarbeiter
+ klein ist und möglichst wenige Regel verletzt sind.
+ 
+\end_layout
+
+\begin_layout Standard
+Um die Entscheidungen von Personalplaner mitzuberücksichtigen, kann man
+ dem Algorithmus erlauben, nur bestimmte Teile vom Dienstplan zu ändern.
+\end_layout
+
+\begin_layout Standard
+Wir haben diesen Code mit 30 Tage, 40 Mitarbeitern und 6 Schichten getestet
+ und einfachen Arbeitszeitregeln getestet.
+\end_layout
+
+\begin_layout Standard
+Der Code steht unter LGPL oder GPL zur Verfügung.
+\end_layout
+
+\begin_layout Section
+Wahrscheinlichkeitsmodel für Covid-Score
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Wahrscheinlichkeits-Model-für"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -430,17 +802,18 @@ Wir bezeichnen die Wahrscheinlichkeit von einer infizierte Person angesteckt
 \end_layout
 
 \begin_layout Standard
-Wir nehmen an, dass Infizierungen unabhängig und gleich wahrscheinlich sind
- (i.i.d).
+Wir nehmen an, dass Infizierungen unabhängig von einander und gleich wahrscheinl
+ich sind (i.i.d).
  Dann ist die Wahrscheinlichkeit von einer Person 
 \begin_inset Formula $i$
 \end_inset
 
  mit einem unbekannten Covid-Status eingesteckt zu werden 
 \begin_inset Formula 
-\[
-P(Y_{i}=0)=P(Y_{i}=0\cap X_{i}=0)+\underbrace{P(Y_{i}=0\cap X_{i}=1)}_{=0(\text{unmöglich)}}=P(Y_{i}=0|X_{i}=0)P(X_{i}=0)=p\cdot r.
-\]
+\begin{align*}
+P(Y_{i}=0) & =P(Y_{i}=0\cap X_{i}=0)+\underbrace{P(Y_{i}=0\cap X_{i}=1)}_{=0(\text{unmöglich)}}\\
+ & =P(Y_{i}=0|X_{i}=0)P(X_{i}=0)=p\cdot r
+\end{align*}
 
 \end_inset
 
@@ -507,53 +880,20 @@ P(G=1)=P(Y_{1}=1\cap\ldots\cap Y_{n}=1)\cdot P(Z_{1}=1\cap\ldots\cap Z_{k}=0)=(1
 
 \end_layout
 
-\begin_layout Paragraph*
-Zusammengenfassung:
+\begin_layout Section
+Ausblick
 \end_layout
 
-\begin_layout Itemize
-\begin_inset Formula $p$
-\end_inset
-
- ist die Wahrscheinlichkeit dass ein Kontakt Covid hat.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $r$
-\end_inset
-
- ist die Wahrscheinlichkeit von einer infizierte Person angesteckt zu werden.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $n$
-\end_inset
-
- ist die Anzahl von Kontakten mit Personen mit unbekanntem Covid-Status.
-\end_layout
-
-\begin_layout Itemize
-\begin_inset Formula $k$
-\end_inset
-
- ist die Anzahl von Kontakten mit Personen mit Covid.
-\end_layout
-
-\begin_layout Itemize
-Wahrscheinlichkeit gesund zu bleiben ist
-\begin_inset Formula 
-\[
-(1-p\cdot r)^{n}\cdot(1-r)^{k}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Indirkete Kontakte mit Personen mit unbekannten Status müssen nicht berücksichti
-g werden.
+\begin_layout Standard
+Die Modellierung des Dienstplanproblems mit Scoring System ist eine flexible
+ Möglichkeit sich diesem Problem-Typus zu nähern.
+ Im Rahmen der kurzen Arbeitszeit sind viele Fragen offen geblieben.
+ Beispielsweise bleibt zu Überprüfen, inwiefern die gefundenen Lösungen
+ den Anforderungen eines Anwenders entsprechen.
+ Im Speziellen spielt hierbei die Wichtung der einzelnen Teilscores eine
+ entscheidende Rolle und bleibt der Beforschung überlassen.
+ Beim Entwickeln neuer Teilscores für problemspezifische Anpassungen, sind
+ der Kreativiät keine Grenzen gesetzt.
 \end_layout
 
 \end_body
