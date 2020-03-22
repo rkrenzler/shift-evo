@@ -82,7 +82,7 @@ Dienstplanoptimierung
 \begin_inset Newline newline
 \end_inset
 
-Version 3
+Version 4
 \end_layout
 
 \begin_layout Date
@@ -185,10 +185,9 @@ Wir wollen uns dabei eng an ein konkretes Beispiel aus dem Krankenhausalltag
  halten und dort die Monatsplanung der Pfleger einer Station modellieren.
  Dies ist eine deutlich abgespeckte Version des allgemeinen Problems, jedoch
  zur Skizzierung der Gedanken geeignet.
- Es bleibt dem Leser überlassen, die folgenden Ideen und Anregungen welche
- innerhalb von 48h während des #WirVsVirus-Hackathon2020 entstanden und
- verfasst worden sind frei zu benutzen und weiter zu entwickeln.
- 
+ Die folgenden Ideen und Anregungen sind innerhalb von 48h während des #WirVsVir
+us-Hackathon2020 entstanden und verfasst worden.
+ Sie müssen noch genau überprüft und getestet werden.
 \end_layout
 
 \begin_layout Subsection*
@@ -202,7 +201,7 @@ optimale Dienstpläne zu berechnen ist sehr schwer (NP-schwer)
 \begin_layout Itemize
 es gibt keine Garantie, dass eine optimale Lösung in der Realität funktionieren
  wird, da kurzfristige Ausfälle die gesamte Planung durcheinander bringen
- können
+ kann
 \end_layout
 
 \begin_layout Itemize
@@ -213,8 +212,8 @@ aufgrund einer Notsituationen erwarten wir sogar Verletzungen von Regeln,
 \begin_layout Itemize
 aufgrund zu vieler Parameter fällt es schwer den Überblick zu behalten und
  gute Lösungen zu finden.
- Wir müssen gleichzeitig viele diverse Prioritäten berücksichtigen: Überstunden,
- Personalmangel, Ansteckungsgefahr, Belastung der Mitarbeiter.
+ Wir müssen gleichzeitig unterschiedliche Prioritäten berücksichtigen: Überstund
+en, Personalmangel, Ansteckungsgefahr, Belastung der Mitarbeiter.
  - am Ende möchte der Mensch das letzte Wort haben und den Plan nach seinen
  Wünschen gestalten 
 \end_layout
@@ -228,8 +227,8 @@ Szenario
 \end_layout
 
 \begin_layout Standard
-Personalplanerin versucht für den kommenden Monat geeignete Mitarbeiter
- in sein bestehendes Schichtmodell einzutragen.
+Eine Personalplanerin versucht für den kommenden Monat geeignete Mitarbeiter
+ in ihr bestehendes Schichtmodell einzutragen.
  Sie möchte Arbeitszeitenregelungen, Ruhephasen, Wünsche der Mitarbeiter,
  und potentiellen Covid-Status des Mitarbeiters berücksichtigen 
 \end_layout
@@ -268,7 +267,7 @@ Algorithmische Realisierung
 \end_layout
 
 \begin_layout Standard
-Wir nennen den Score, der im Ampelsystem dargestellt, einen Gesamtscore
+Wir nennen den Score, der im Ampelsystem dargestellt wird, einen Gesamtscore
  
 \begin_inset Formula $\GesamtScore$
 \end_inset
@@ -340,7 +339,7 @@ zeiten- und Freischichtenregelungen eingehalten werden.
  Er ist Null, falls aus Arbeitsrechtlichen Gründen eine Einteilung des Mitarbeit
 ers nicht möglich ist.
  Er ist 1, falls eine Einteilung problemlos stattfinden kann.
- Je größer der Score desto mehr Zeit steht der Mitarbeiter zur Verfügung.
+ Je höher der Score desto eher steht der Mitarbeiter zur Verfügung.
  Mit folgender Darstellung bilden wir das gewünschte Verhalten ab:
 \end_layout
 
@@ -367,7 +366,8 @@ In dieser Formel ist
 \emph on
 max_hours
 \emph default
- ist die Anzahl der Arbeitsstunden, die Mitarbeiter insgesamt machen darf.
+ ist die Anzahl der Arbeitsstunden, die der Mitarbeiter insgesamt machen
+ darf.
 \end_layout
 
 \begin_layout Standard
@@ -377,14 +377,6 @@ max_hours
 \emph default
  berücksichtigt werden.
  
-\end_layout
-
-\begin_layout Standard
-Mitarbeiterwünsche_Score gesamt_Score 
-\end_layout
-
-\begin_layout Standard
-Interaktives: Dienstplan_Score Modell:
 \end_layout
 
 \begin_layout Subsubsection*
@@ -575,7 +567,7 @@ Andere Algorithmen
 \begin_layout Standard
 Man kann auch versuchen, diesen Dienstplan mit Hilfe von evolutionären Algorithm
 en zu optimieren.
- Dazu wird jeder persönlicher Plan als eine Folge von Zahlen 
+ Dazu wird jeder persönliche Plan als eine Folge von Zahlen 
 \begin_inset Formula $0,1,2$
 \end_inset
 
@@ -634,20 +626,20 @@ Der evolutionäre Algorithmus benötigt eine Kostenfunktion.
 
 \begin_layout Standard
 Der evolutionäre Algorithmus wird dann versuchen den Dienstplan so zu ändern,
- dass die Gesamtkosten nieder sind.
+ dass die Gesamtkosten niedriger sind.
  In unserem Fall bedeutet es, dass die Anzahl der fehlenden Mitarbeiter
- klein ist und möglichst wenige Regel verletzt sind.
+ klein ist und möglichst wenige Regeln verletzt werden.
  
 \end_layout
 
 \begin_layout Standard
-Um die Entscheidungen von Personalplaner mitzuberücksichtigen, kann man
+Um die Entscheidungen von Personalplanern mitzuberücksichtigen, kann man
  dem Algorithmus erlauben, nur bestimmte Teile vom Dienstplan zu ändern.
 \end_layout
 
 \begin_layout Standard
-Wir haben diesen Code mit 30 Tage, 40 Mitarbeitern und 6 Schichten getestet
- und einfachen Arbeitszeitregeln getestet.
+Wir haben diesen Code mit 30 Tagen, 40 Mitarbeitern und 6 Schichten für
+ ein Szenario mit einfachen Anwendungsregeln getestet
 \end_layout
 
 \begin_layout Standard
@@ -821,8 +813,8 @@ P(Y_{i}=0) & =P(Y_{i}=0\cap X_{i}=0)+\underbrace{P(Y_{i}=0\cap X_{i}=1)}_{=0(\te
 \end_layout
 
 \begin_layout Standard
-Die Wahrscheinlichkeit, dass keine Ansteckung nach diesem Kontakt findet
- ist Gegenteil davon
+Die Wahrscheinlichkeit, dass keine Ansteckung nach diesem Kontakt statt
+ findet, ist 
 \begin_inset Formula 
 \[
 P(Y_{i}=1)=1-p\cdot r.
@@ -835,7 +827,7 @@ Wegen Unabhängigkeitsannahmen ist die Wahrscheinlichkeit gesund zu bleiben
 \begin_inset Formula $n$
 \end_inset
 
- Kontakte mit Personen mit unbekannten Cnvid-Statusen:
+ Kontakten mit Personen mit unbekannten Covid-Status:
 \end_layout
 
 \begin_layout Standard
@@ -877,7 +869,7 @@ P(G=1)=P(Y_{1}=1\cap\ldots\cap Y_{n}=1)\cdot P(Z_{1}=1\cap\ldots\cap Z_{k}=0)=(1
 
 \end_inset
 
-
+Indirekte Kontakte müssen in diesem Modell nicht berücksichtigt werden.
 \end_layout
 
 \begin_layout Section
