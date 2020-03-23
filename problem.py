@@ -112,7 +112,9 @@ class Solution:
             for di, day in enumerate(plan):
                 if plan[di] == shift_type:
                     result[di].append(pi)
-
+        # In order to make results easy to read sort employee indices for very day.
+        for di, day in enumerate(result):
+            result[di] = list(sorted(day))
         return result
 
     @staticmethod
