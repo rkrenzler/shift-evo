@@ -136,10 +136,25 @@ class Helper:
         return True
 
     @staticmethod
+    def shift_worked(subplan, start_index, end_index):
+        """Calculate number of worked shifts in days [start_index, end_index)."""
+        res = 0
+        for i in range(start_index, end_index):
+            if subplan[i] != FREE:
+                res += 1
+        return res
+
+    @staticmethod
     def shift_type_14(subplan):
         """ In 14 Tagen arbeitet der Mitarbeiter maximal 10 Schichten.
-        TODO:
+
+        This is not optimized version.
         """
+        for begin_i in range(0, len(subplan)-14):
+            w = Helper.shift_worked(subplan, begin_i, begin_i+14)
+            if w > 10:
+                return False
+
         return True
 
     def evaluate(self, individual) -> float:
