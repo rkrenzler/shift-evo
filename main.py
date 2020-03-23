@@ -1,9 +1,9 @@
 # Optimize shifts for medical staff.
 # Ruslan Krenzler 21.03.2020
-# The code is under LGPL.
+# This code is under the public domain licence CC0, See https://creativecommons.org/
 # It is only proof of concept.
-# Calculate plan for Employees numbered 0,1,2,3,4,... missing employee is -1
-# For days 0,1,2,3,4
+# Calculate plan for Employees numbered 1,2,3,4,... missing employee is 0
+# For days 1,2,3,4,5
 
 import copy
 import random  # For seed.
