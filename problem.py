@@ -169,7 +169,7 @@ class Solution:
         if shift_name is not None:
             # TODO this does not work as expected. If you change one element of the column
             # all the elements will be changed.
-            col = pd.DataFrame([shift_name for i in range(nrows)])
+            col = pd.DataFrame([shift_name for i in range(nrows)], columns=["ShiftType"])
             table = pd.concat([col, table], axis=1)
         return table
 
