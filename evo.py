@@ -150,17 +150,17 @@ class Helper:
         # split whole plan in employee plans.
         personal_plans = np.array_split(individual, self.nemployees)
         costs = 0.0
-        # Add huge costs (more than if no one works) if shift rules are violated.
+        # Add huge costs (more than if no one works) for each violated rule per person.
         for personal_plan in personal_plans:
             if not Helper.nex_day_constraint(personal_plan):
-                costs = self.infeasible_costs + 1
-                break
+                costs += self.infeasible_costs
+                continue
             if not Helper.shift_type_4(personal_plan) and not Helper.shift_type_8(personal_plan):
-                costs = self.infeasible_costs + 2
-                break
+                costs += self.infeasible_costs
+                continue
             if not Helper.shift_type_14(personal_plan):
-                costs = self.infeasible_costs + 3
-                break
+                costs += self.infeasible_costs
+                continue
 
         # Check if we used all the capacity
         used_capacities_early = [0] * self.ndays
