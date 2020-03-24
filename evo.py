@@ -85,8 +85,9 @@ class Helper:
                     if subplan[i + 1] != NIGHT_SHIFT and (subplan[i + 1] != FREE and subplan[i + 2] != FREE):
                         return False
                 # TODO: We need to discuss, how this constraint work on the day before the last day.
+		# I assume it is sufficient to have only one free day too.
                 else:
-                    if subplan[i + 1] != NIGHT_SHIFT:
+                    if subplan[i + 1] != NIGHT_SHIFT and (subplan[i + 1] != FREE):
                         return False
         return True
 
