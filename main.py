@@ -32,8 +32,9 @@ problem = problem_mod.ProblemBuilder.generate(nemp=40, ndays=30, npar=6)
 POPULATION_SIZE = 100
 MAX_GENERATIONS = 10000
 MAX_NO_IMPROVEMENTS = 100
-# Set it to None if you do not want to write data to a file.
-CSV_FILE = None
+# Set it to None if you do not want to store intermediate statistics like for example
+# least costs so far, min costs and max costs in a generation and so on.
+LOGBOOK_CSV_FILE = "statistics.csv"
 
 helper = Helper(problem)
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -75,8 +76,8 @@ pop, logbook = metaalgorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.1, ngen=M
 # pop, logbook = deap.algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=MAX_GENERATIONS,
 #                                   stats=stats, halloffame=hof, verbose=True)
 
-if CSV_FILE is not None:
-    with open(CSV_FILE, 'w+') as csvfile:
+if LOGBOOK_CSV_FILE is not None:
+    with open(LOGBOOK_CSV_FILE, 'w+') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=logbook.header)
         writer.writeheader()
         writer.writerows(logbook[0:len(logbook)])
