@@ -15,9 +15,13 @@ import numpy
 from deap import base
 from deap import creator
 from deap import tools
+import deap.algorithms
 import problem as problem_mod
 from evo import Helper
 import metaalgorithms
+
+deap.algorithms.eaSimple
+
 
 # Use normal random instead of numpy.random.seed(7) to get reproducible results.
 random.seed(7)
@@ -25,13 +29,13 @@ random.seed(7)
 PLAN_CSV_FILE = 'plan.csv'  # Here we store the resulting file.
 
 # Simple test problem
-# problem = problem_mod.ProblemBuilder.generate(nemp=12, ndays=5, npar=2)
+#problem = problem_mod.ProblemBuilder.generate(nemp=12, ndays=5, npar=2)
 # Medium problem
 problem = problem_mod.ProblemBuilder.generate(nemp=40, ndays=30, npar=6)
 
 POPULATION_SIZE = 100
 MAX_GENERATIONS = 10000
-MAX_NO_IMPROVEMENTS = 100
+MAX_NO_IMPROVEMENTS = 200
 # Set it to None if you do not want to store intermediate statistics like for example
 # least costs so far, min costs and max costs in a generation and so on.
 LOGBOOK_CSV_FILE = "statistics.csv"
@@ -55,7 +59,7 @@ ind1 = toolbox.individual()
 print(ind1)
 print("Initial fitness: {}".format(helper.evaluate(initial_solution)))
 
-# Swich on multiprocessing.
+# Switch on multiprocessing.
 pool = multiprocessing.Pool()
 toolbox.register("map", pool.map)
 
@@ -70,10 +74,9 @@ T = len(initial_solution)
 stats.register("MinTotal", lambda x: numpy.min(x) * T)  # Minimal total costs and not average.
 stats.register("Max", numpy.max)
 pop, logbook = metaalgorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.1, ngen=MAX_GENERATIONS,
-                                  maxnoimprovments=MAX_NO_IMPROVEMENTS,
+                                  maxnoimprovments=MAX_NO_IMPROVEMENTS, stop_if_less = 0.0001,
                                   stats=stats, halloffame=hof, verbose=True)
-
-# pop, logbook = deap.algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=MAX_GENERATIONS,
+#pop, logbook = deap.algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=MAX_GENERATIONS,
 #                                   stats=stats, halloffame=hof, verbose=True)
 
 if LOGBOOK_CSV_FILE is not None:

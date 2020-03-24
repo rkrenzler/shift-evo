@@ -1,8 +1,10 @@
 # This
 # Ruslan Krenzler 21.03.2020
 # The code is under LGPL.
-# This is modified version of deap.algorithm.eaSimple. The only modification is additional stopping
-# criteria. Maximal number of generation without improvement. maxnoimprovment
+# This is modified version of deap.algorithm.eaSimple. The two modifications are:
+# additional stopping criteria.
+# 1) Maximal number of generation without improvement maxnoimprovment.
+# 2) Stopping costs. Stopp algoirhtms if the costs fall below stop_if_less.
 
 import pickle
 import random
@@ -21,9 +23,10 @@ def min_fitness(population):
 
     return ret_val
 
-def eaSimple(population, toolbox, cxpb, mutpb, ngen, maxnoimprovments=None, stats=None,
-                       halloffame=None, verbose=__debug__, checkpoint_prefix=None, checkpoint_frequency=100,
-                       results_csv=None):
+def eaSimple(population, toolbox, cxpb, mutpb, ngen, maxnoimprovments=None, stop_if_less = None,
+             stats=None,
+             halloffame=None, verbose=__debug__, checkpoint_prefix=None, checkpoint_frequency=100,
+             results_csv=None):
     """This algorithm reproduce the simplest evolutionary algorithm as
     presented in chapter 7 of [Back2000]_.
 
@@ -111,7 +114,7 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, maxnoimprovments=None, stat
     if maxnoimprovments is None:
         maxnoimprovments = ngen + 1
     noimprovements = 0
-    best_fitness_so_far = min_fitness(population)
+    min_fitness_so_far = min_fitness(population)
 
     # Begin the generational process
     for gen in range(1, ngen + 1):
@@ -144,12 +147,13 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, maxnoimprovments=None, stat
             csvfile.flush()
         # Check if this generation has some improvements.
         generation_fitnes = min_fitness(population)
-        if generation_fitnes < best_fitness_so_far:
-            best_fitness_so_far = generation_fitnes
+        if generation_fitnes < min_fitness_so_far:
+            min_fitness_so_far = generation_fitnes
             noimprovements = 0
         else:
             noimprovements += 1
 
+        # if
         if checkpoint_prefix is not None:
             if gen % checkpoint_frequency == 0:
                 # Fill the dictionary using the dict(key=value[, ...]) constructor
@@ -164,5 +168,11 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, maxnoimprovments=None, stat
             if verbose:
                 print("Maximal number of not improved generations {} reached.".format(maxnoimprovments))
             break
+
+        if stop_if_less is not None:
+            if min_fitness_so_far < stop_if_less:
+                if verbose:
+                    print("Fitness {} felt below {}. Stopping the algoirhm".format(min_fitness_so_far, stop_if_less))
+                break
 
     return population, logbook
