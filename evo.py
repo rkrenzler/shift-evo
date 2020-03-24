@@ -7,7 +7,7 @@ Author: Ruslan Krenzler, 2020
 This code is under the public domain licence CC0, See https://creativecommons.org/
 
 
-23. March 2019
+23. March 2020
 """
 
 from problem import FREE, EARLY_SHIFT, LATE_SHIFT, NIGHT_SHIFT, Solution
