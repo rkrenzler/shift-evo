@@ -13,7 +13,8 @@ This code is under the public domain licence CC0, See https://creativecommons.or
 from problem import FREE, EARLY_SHIFT, LATE_SHIFT, NIGHT_SHIFT, Solution
 import numpy as np
 
-# Every complete solution is a sequence of EMLOYEES-number of personal plans.
+
+# Every complete solution is a sequence of personal plans.
 # Every personal plan is a sequence of [DAYS]-numbers of numbers 0,1,2,3. That is 3,3,1,2,2,0...
 
 # The fitness of the individual is a number of not used capacities for per day.
@@ -85,37 +86,78 @@ class Helper:
                     if subplan[i + 1] != NIGHT_SHIFT and (subplan[i + 1] != FREE and subplan[i + 2] != FREE):
                         return False
                 # TODO: We need to discuss, how this constraint work on the day before the last day.
-		# I assume it is sufficient to have only one free day too.
+                # I assume it is sufficient to have only one free day too.
                 else:
                     if subplan[i + 1] != NIGHT_SHIFT and (subplan[i + 1] != FREE):
                         return False
         return True
 
     @staticmethod
-    def shift_type_4(subplan):
-        """ Nach 4 geleisteten Schichten hat der MA minimum einen Tag frei."""
+    def shift_type_4(subplan, start_index):
+        """ Nach 4 geleisteten Schichten hat der MA minimum einen Tage frei.
+
+        TODO: It is not clear, what to do for the days after the plan ends.
+        To make it easy we assume tha the following days are.
+        """
         in_a_row = 0
-        for i in range(0, len(subplan) - 1):
+        free_days = 0
+        if start_index + 4 >= len(subplan):
+            return True  # Plan ends, we assume there will be a free days later.
+        else:
+            if subplan[start_index + 4] != FREE:
+                free_days += 1
+
+        for i in range(0, start_index + 4):
             if subplan[i] != FREE:
                 in_a_row += 1
             else:
                 in_a_row = 0  # Reset counter.
 
-            if in_a_row == 4 and subplan[i + 1] != FREE:
-                return False
+        if in_a_row == 4 and free_days == 1:
+            return False
+
         return True
 
     @staticmethod
-    def shift_type_8(subplan):
-        """ Nach 8 geleisteten Schichten hat der MA minimum zwei Tage frei"""
+    def shift_type_8(subplan, start_index):
+        """ Nach 8 geleisteten Schichten hat der MA minimum zwei Tage frei.
+
+        TODO: It is not clear, what to do for the days after the plan ends.
+        To make it easy we assume tha the following days are.
+        """
         in_a_row = 0
-        for i in range(0, len(subplan) - 2):
+        free_days = 0
+        if start_index + 8 >= len(subplan):
+            return True  # Plan ends, we assume there will be free days after.
+        if start_index + 8 == len(subplan):
+            free_days = 2  # After 8 days the plan ends. We do not know if the employee will have a free day,
+            # but we assume that it is free to keep it simple.
+        elif start_index + 8 == len(subplan) -1 :
+            free_days = 1  # After 9 days the plan ends. We do not know if the employee will have a free day,
+            # but we assume that it is free to keep it simple.
+        else:
+            if  subplan[start_index + 8] != FREE:
+                free_days += 1
+            if subplan[start_index + 8 + 1] != FREE:
+                free_days += 1
+
+        for i in range(0, start_index + 8):
             if subplan[i] != FREE:
                 in_a_row += 1
             else:
                 in_a_row = 0  # Reset counter.
 
-            if in_a_row == 8 and (subplan[i + 1] != FREE or subplan[i + 2] != FREE):
+        if in_a_row == 8 and free_days == 2:
+            return False
+
+        return True
+
+    @staticmethod
+    def shift_type_4_or_8(subplan):
+        """For every day, either the rule for 4 or the rule for 8 consecutive days must apply.
+        """
+        for i in range(0, len(subplan) - 4):
+            if Helper.shift_type_4(subplan, i) == False and Helper.shift_type_8(subplan, i) == False:
                 return False
         return True
 
@@ -151,8 +193,8 @@ class Helper:
 
         This is not optimized version.
         """
-        for begin_i in range(0, len(subplan)-14):
-            w = Helper.shift_worked(subplan, begin_i, begin_i+14)
+        for begin_i in range(0, len(subplan) - 14):
+            w = Helper.shift_worked(subplan, begin_i, begin_i + 14)
             if w > 10:
                 return False
 
@@ -171,7 +213,7 @@ class Helper:
             if not Helper.nex_day_constraint(personal_plan):
                 costs += self.infeasible_costs
                 continue
-            if not Helper.shift_type_4(personal_plan) and not Helper.shift_type_8(personal_plan):
+            if not Helper.shift_type_4_or_8(personal_plan) and not Helper.shift_type_8(personal_plan):
                 costs += self.infeasible_costs
                 continue
             if not Helper.shift_type_14(personal_plan):
