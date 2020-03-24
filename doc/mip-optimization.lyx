@@ -1,0 +1,973 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Dienstplanoptimierung
+\begin_inset Newline newline
+\end_inset
+
+MIP-Model for WirvsVirus
+\begin_inset Newline newline
+\end_inset
+
+Version 1
+\end_layout
+
+\begin_layout Date
+24.
+ März 2020
+\end_layout
+
+\begin_layout Author
+Ruslan Krenzler
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\GesamtScore}{S_{\text{total}}}
+{S_{\text{total}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ArbeitszeitenScore}{S_{\text{time}}}
+{S_{\text{time}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\CovidScore}{S_{\text{COVID}}}
+{S_{\text{COVID}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\MitarbeiterWunschScore}{S_{\text{wish}}}
+{S_{\text{wish}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\FluktuationScore}{S_{\text{team}}}
+{S_{\text{team}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\GesamtWeight}{W_{\text{total}}}
+{W_{\text{total}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\ArbeitszeitenWeight}{W_{\text{time}}}
+{W_{\text{time}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\CovidWeight}{W_{\text{COVID}}}
+{W_{\text{COVID}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\MitarbeiterWunschWeight}{W_{\text{wish}}}
+{W_{\text{wish}}}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\FluktuationWeight}{W_{\text{team}}}
+{W_{\text{team}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+We try create an optimal plan while trying to follow working-time rules.
+ This is a very raw draft made in very short time for WirvsVirus Hackaton.
+ The text and the formulast needs to be proved carefully.
+\end_layout
+
+\begin_layout Section
+Model
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $P$
+\end_inset
+
+ is the set of all employees (P = person).
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $s\in\{E,L,N\}$
+\end_inset
+
+ is the type of the shift.
+ 
+\begin_inset Formula $E$
+\end_inset
+
+ is early, 
+\begin_inset Formula $L$
+\end_inset
+
+ is late and 
+\begin_inset Formula $N$
+\end_inset
+
+ is night.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R$
+\end_inset
+
+ is a set of working-time rules.
+ In this example 
+\begin_inset Formula $R=\{4\text{or}8,14\}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $D$
+\end_inset
+
+ is a set of all days.
+ This set is ordered: for the next day we write 
+\begin_inset Formula $d+1$
+\end_inset
+
+, and for the previous day we write 
+\begin_inset Formula $d-1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Decision variables 
+\begin_inset Formula $x_{pds}\in\{0,1\}$
+\end_inset
+
+ for 
+\begin_inset Formula $p\in P$
+\end_inset
+
+, 
+\begin_inset Formula $d\in D$
+\end_inset
+
+, 
+\begin_inset Formula $s\in S$
+\end_inset
+
+.
+ It mean a person 
+\begin_inset Formula $p$
+\end_inset
+
+ on day 
+\begin_inset Formula $d$
+\end_inset
+
+ has a shift of type 
+\begin_inset Formula $s$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Auxiliary decision variables 
+\begin_inset Formula $z_{pdr}\in\{0,1\}$
+\end_inset
+
+ for 
+\begin_inset Formula $p\in P$
+\end_inset
+
+, 
+\begin_inset Formula $r\in R$
+\end_inset
+
+.
+ It means that a rule of type 
+\begin_inset Formula $r$
+\end_inset
+
+ was violated for a person 
+\begin_inset Formula $p$
+\end_inset
+
+ at day 
+\begin_inset Formula $d$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Auxiliary decision variables 
+\begin_inset Formula $f_{pd}\in\{0,1\}$
+\end_inset
+
+.
+ It means a person 
+\begin_inset Formula $p$
+\end_inset
+
+ has a free day on the day 
+\begin_inset Formula $d$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $D_{ds}\in\mathbb{N}_{0}$
+\end_inset
+
+ describes how many employees one needs for day 
+\begin_inset Formula $d$
+\end_inset
+
+ to work in shift 
+\begin_inset Formula $s$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $c_{\text{under}}$
+\end_inset
+
+ is the cost for every missing person to supply a demand for a shift.
+ We set it to one.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $c_{\text{rules}}$
+\end_inset
+
+ additional cost for violating any type of working-time rule for every person
+ and day.
+\end_layout
+
+\begin_layout Standard
+The cost function to minimize is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+c_{\text{under}}\sum_{d\in D,s\in S}\Big(D_{ds}-\sum_{p\in P}x_{pds}\Big)+c_{\text{rules}}\sum_{p\in P,d\in D,r\in R}z_{pdr},
+\]
+
+\end_inset
+
+Because 
+\begin_inset Formula $D_{ds}$
+\end_inset
+
+ are constant, it is equivalent to minimize the function, because 
+\begin_inset Formula 
+\begin{equation}
+costs=-c_{\text{under}}\sum_{p\in P,d\in D}\sum_{s\in S}x_{pds}+c_{\text{rules}}\sum_{p\in P,d\in D,r\in R}z_{pr},\label{eq:costs-function}
+\end{equation}
+
+\end_inset
+
+Here it is important not to assign more employees to a shift than the demand
+ requires.
+ Otherwise the optimizer can try 
+\begin_inset Quotes gld
+\end_inset
+
+overbook
+\begin_inset Quotes grd
+\end_inset
+
+ one day, in order to compensate all missing persons in another day.
+\end_layout
+
+\begin_layout Standard
+In Section 
+\begin_inset CommandInset ref
+LatexCommand vref
+reference "sec:MIP"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we present the MIP formulation of the problem.
+ In 
+\begin_inset CommandInset ref
+LatexCommand vref
+reference "sec:Calculations"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we explain the calculation of the constraints in detail.
+ 
+\end_layout
+
+\begin_layout Section
+MIP
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:MIP"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Minimize 
+\begin_inset Formula 
+\[
+costs=-c_{\text{under}}\sum_{p\in P,d\in D}\sum_{s\in S}x_{pds}+c_{\text{rules}}\sum_{p\in P,r\in R}z_{pr},
+\]
+
+\end_inset
+
+under the constraints:
+\end_layout
+
+\begin_layout Standard
+Every employee must have a free day, early shift, late shift or night shift
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f_{pd}=1-\sum_{s\in S}x_{pds}\qquad\forall p\in P,d\in D.\label{eq:free-day-1}
+\end{equation}
+
+\end_inset
+
+Maximal number of employees per shift
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{p\in P}x_{pds}\leq D_{ds}\forall p\in P,d\in D.\label{eq:rule-demand}
+\end{equation}
+
+\end_inset
+
+Special rules for the next day
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+x_{pdE}+x_{p(d+1)N} & \leq1\qquad p\in P,d\in D\setminus\{\text{last day}\},\label{eq:rule-after-early-shift-1}
+\end{align}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+x_{pdL}+x_{p(d+1)E} & \leq1\qquad p\in P,d\in D\setminus\{\text{last day}\},\label{eq:rule-after-late-shift-1}
+\end{align}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+-x_{pdN}+x_{p(d+1)N}+f_{p(d+1)} & \geq0\qquad p\in P,d\in D\setminus\{\text{last day}\},\label{eq:night-shift-rule-1-1}\\
+-x_{pdN}+x_{p(d+1)N}+f_{p(d+2)} & \geq0\qquad p\in P,d\in D\setminus\{\text{two last days}\}.\label{eq:night-shift-rule-2-1}
+\end{align}
+
+\end_inset
+
+Free day after working four days in a row or two free days after working
+ eight days in a row.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+a_{pd4}+a_{pd8}+z_{pd4\text{or}8}=1,
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f_{pd}+f_{pd+1}+f_{pd+2}+f_{pd+3}-f_{pd+4}\leq4-a_{pd4}\qquad D\setminus\{\text{last 9 days}\},\label{eq:rule-four-days-in-arow}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{i=0}^{7}f_{pd+i}-f_{pd+8}-f_{pd+9}\leq8-2a_{pd4}\qquad D\setminus\{\text{last 9 days}\},\label{eq:rule-eight-days-in-a-row}
+\end{equation}
+
+\end_inset
+
+Work no more than 8 days within 14 days.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sum_{i=0}^{14}f_{pd+i}\geq4-4z_{pd14}\qquad\forall p\in P,d\in D\setminus\{\text{last 13 days}\}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Calculations
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Calculations"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Free days and consistency
+\end_layout
+
+\begin_layout Standard
+A person 
+\begin_inset Formula $p$
+\end_inset
+
+ has a free day if it does not have early, late or night shift and one shift
+ per day per person or a free day
+\begin_inset Formula 
+\begin{equation}
+f_{pd}=1-\sum_{s\in S}x_{pds}\qquad\forall p\in P,d\in D.\label{eq:free-day}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Demand constraints
+\end_layout
+
+\begin_layout Standard
+Do not supply more persons than necessary
+\begin_inset Formula 
+\[
+\sum_{p\in P}x_{pds}\leq D_{ds}\forall p\in P,d\in D.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Shift constraints
+\end_layout
+
+\begin_layout Standard
+We consider shift constrains as hard constrains and do not allow to break
+ them.
+\end_layout
+
+\begin_layout Standard
+For every person 
+\begin_inset Formula $p\in P$
+\end_inset
+
+ there are special rules how to select a shift.
+ 
+\begin_inset Formula $x_{pds}=1$
+\end_inset
+
+ is equivalent to 
+\begin_inset Quotes gld
+\end_inset
+
+the expression 
+\begin_inset Formula $x_{pds}$
+\end_inset
+
+ is true.
+\begin_inset Quotes grd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Due to the constraint 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:free-day"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we can often omit exclusive or requirements.
+ That means for the expression 
+\begin_inset Quotes gld
+\end_inset
+
+either early shift or late shift
+\begin_inset Quotes grd
+\end_inset
+
+ we can write 
+\begin_inset Quotes gld
+\end_inset
+
+early shift or late shift
+\begin_inset Quotes grd
+\end_inset
+
+.
+ Or formally, instead of 
+\begin_inset Formula $(x_{pdE}\land\lnot x_{pdL})\lor(\lnot x_{pdE}\land x_{pdL})$
+\end_inset
+
+ it is sufficient to write 
+\begin_inset Formula $x_{pdE}\lor x_{pdL}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph
+Early-shift rule
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes gld
+\end_inset
+
+Auf einen Frühdienst folgt am nächsten Tag nur ein weiterer Frühdienst,
+ ein Spätdienst oder ein Freier, Tag, aber kein Nachtdienst.
+\begin_inset Quotes grd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This expression is equivalent to 
+\begin_inset Quotes gld
+\end_inset
+
+Auf einen Frühdienst folgt am nächsten kein Nachtdienst.
+\begin_inset Quotes grd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The corresponding logic expression is 
+\begin_inset Formula $x_{pdE}\rightarrow\lnot x_{p(d+1)N}$
+\end_inset
+
+.
+ We convert it into a conjunctive normal form 
+\begin_inset Formula $\lnot x_{pdE}\lor\lnot x_{p(d+1)N}$
+\end_inset
+
+.
+ The corresponding MIP constraint is
+\begin_inset Formula 
+\begin{align*}
+1-x_{pdE}+1-x_{p(d+1)N} & \geq1.
+\end{align*}
+
+\end_inset
+
+It finally becomes
+\begin_inset Formula 
+\begin{align}
+x_{pdE}+x_{p(d+1)N} & \leq1\qquad p\in P,d\in D\setminus\{\text{last day}\}\label{eq:rule-after-early-shift}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+Late-shift rule
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes gld
+\end_inset
+
+Auf einen Spätdienst folgt am nächsten Tag nur ein weiterer Spätdienst,
+ ein Nachtdienst oder ein freier Tag, aber kein Frühdienst
+\begin_inset Quotes grd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This expression is equivalent to 
+\begin_inset Quotes gld
+\end_inset
+
+Auf einen Spätdienst folgt aber kein Frühdienst
+\begin_inset Quotes grd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Similar to calculation above we can write it as
+\begin_inset Formula 
+\begin{align}
+x_{pdL}+x_{p(d+1)E} & \leq1\qquad p\in P,d\in D\setminus\{\text{last day}\}.\label{eq:rule-after-late-shift}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph*
+Night-shift rule
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes gld
+\end_inset
+
+Auf einen Nachtdienst folgt am nächsten Tag nur ein weiterer Nachtdienst
+ oder zwei freie Tage
+\begin_inset Quotes grd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is unclear, what should we do for the day before the last day.
+ We assume that it is sufficient to have one night shift and only one free
+ day.
+ The corresponding logical expression is 
+\begin_inset Formula 
+\[
+x_{pdN}\rightarrow\left(x_{p(d+1)N}\lor(f_{p(d+1)}\land f_{p(d+2)})\right).
+\]
+
+\end_inset
+
+We convert this expression into conjunctive normal form
+\begin_inset Formula 
+\begin{align*}
+ & \lnot x_{pdN}\lor x_{p(d+1)N}\lor(f_{p(d+1)}\land f_{p(d+2)})\\
+= & (\lnot x_{pdN}\lor x_{p(d+1)N}\lor f_{p(d+1)})\land\left(\lnot x_{pdN}\lor x_{p(d+1)N}\lor f_{p(d+2)}\right).
+\end{align*}
+
+\end_inset
+
+The corresponding MIP expressions are
+\begin_inset Formula 
+\begin{align*}
+1-x_{pdN}+x_{p(d+1)N}+f_{p(d+1)} & \geq1,\\
+1-x_{pdN}+x_{p(d+1)N}+f_{p(d+2)} & \geq1.
+\end{align*}
+
+\end_inset
+
+Or equivalent
+\begin_inset Formula 
+\begin{align}
+-x_{pdN}+x_{p(d+1)N}+f_{p(d+1)} & \geq0\qquad p\in P,d\in D\setminus\{\text{last day}\}\label{eq:night-shift-rule-1}\\
+-x_{pdN}+x_{p(d+1)N}+f_{p(d+2)} & \geq0\qquad p\in P,d\in D\setminus\{\text{two last days}\}\label{eq:night-shift-rule-2}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Constraints for days in a row
+\end_layout
+
+\begin_layout Paragraph
+Eight-or-four rule
+\end_layout
+
+\begin_layout Standard
+This is a combination of four-days-in-a-row or eight-days-in-a-row rulse.
+\end_layout
+
+\begin_layout Standard
+The four-days-in-a-row rule is: "Nach 4 geleisteten Schichten hat der MA
+ minimum einen Tag frei." 
+\end_layout
+
+\begin_layout Standard
+The corresponding logic expression is
+\begin_inset Formula 
+\[
+(\lnot f_{pd}\land\lnot f_{pd+1}\land\lnot f_{pd+2}\land\lnot f_{pd+3})\rightarrow f_{pd+4}.
+\]
+
+\end_inset
+
+In conjunctive normal form it is
+\begin_inset Formula 
+\[
+\lnot f_{pd}\lor\lnot f_{pd+1}\lor\lnot f_{pd+2}\lor\lnot f_{pd+3}\lor f_{pd+4}.
+\]
+
+\end_inset
+
+Its MIP expression is
+\begin_inset Formula 
+\[
+1-f_{pd}+1-f_{pd+1}+1-f_{pd+2}+1-f_{pd+3}+f_{pd+4}\geq1
+\]
+
+\end_inset
+
+is equivalent to
+\begin_inset Formula 
+\begin{equation}
+f_{pd}+f_{pd+1}+f_{pd+2}+f_{pd+3}-f_{pd+4}\leq3.\label{eq:for-days-in-a-row-rule}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Eight-days-in-a-row rule: "Nach 8 geleisteten Schichten hat der MA minimum
+ zwei Tage frei"
+\end_layout
+
+\begin_layout Standard
+Similarly to the four-days-in-a-row rule it can be expressed as
+\begin_inset Formula 
+\begin{equation}
+\sum_{i=0}^{7}f_{pd+i}-f_{pd+8}-f_{pd+9}\leq6\label{eq:eight-days-in-a-row-rule}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we combine 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:for-days-in-a-row-rule"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:eight-days-in-a-row-rule"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ We define an activation variable 
+\begin_inset Formula $a_{pd4}$
+\end_inset
+
+ which is activates the rule four-days-in-a-row and an activation variable
+ 
+\begin_inset Formula $a_{pd8}$
+\end_inset
+
+ which activates the four-days-in-a-row rule.
+ If none of the rules are activated, we activate the violation of the rule
+ 
+\begin_inset Formula $z_{pd48}$
+\end_inset
+
+.
+ It holds 
+\begin_inset Formula 
+\[
+a_{d4}+a_{d8}+z_{pd4\text{or}8}=1\qquad D\setminus\{\text{last 9 days}\}
+\]
+
+\end_inset
+
+To keep the rule simple, we do not check last 9 days.
+\end_layout
+
+\begin_layout Standard
+The resulting constraints are
+\begin_inset Formula 
+\[
+f_{pd}+f_{pd+1}+f_{pd+2}+f_{pd+3}-f_{pd+4}\leq4-a_{pd4}\qquad D\setminus\{\text{last 9 days}\}
+\]
+
+\end_inset
+
+and
+\begin_inset Formula 
+\[
+\sum_{i=0}^{7}f_{pd+i}-f_{pd+8}-f_{pd+9}\leq8-2a_{pd4}\qquad D\setminus\{\text{last 9 days}\}.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Maximal number of shift within 14 days
+\end_layout
+
+\begin_layout Standard
+"In 14 Tagen arbeitet der Mitarbeiter maximal 10 Schichten.
+\begin_inset Quotes grd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sum_{i=0}^{14}f_{pd+i}\geq4-4z_{pd14}\qquad\forall p\in P,d\in D\setminus\{\text{last 13 days}\}
+\]
+
+\end_inset
+
+This rule is deactivated, when the flag 
+\begin_inset Formula $z_{pd14}$
+\end_inset
+
+ is one.
+\end_layout
+
+\end_body
+\end_document
