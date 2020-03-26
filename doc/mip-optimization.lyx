@@ -86,11 +86,15 @@ MIP-Model for WirvsVirus
 \begin_inset Newline newline
 \end_inset
 
-Version 1
+Version 2
+\end_layout
+
+\begin_layout Title
+MIP Roster for a Hospital
 \end_layout
 
 \begin_layout Date
-24.
+26.
  März 2020
 \end_layout
 
@@ -166,9 +170,9 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-We try create an optimal plan while trying to follow working-time rules.
- This is a very raw draft made in very short time for WirvsVirus Hackaton.
- The text and the formulast needs to be proved carefully.
+We try to create an optimal roster which follows working-time rules.
+ This is a very raw draft made in very short time for #WirVsVirus Hackaton.
+ The text and the formulas need to be proved carefully.
 \end_layout
 
 \begin_layout Section
@@ -206,12 +210,12 @@ Model
 \begin_inset Formula $R$
 \end_inset
 
- is a set of working-time rules.
- In this example 
+ is a set of working-time rules, which can be violated with high costs.
+ Here we use only two rules 
 \begin_inset Formula $R=\{4\text{or}8,14\}$
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Itemize
@@ -277,7 +281,11 @@ Auxiliary decision variables
 \end_inset
 
 .
- It means that a rule of type 
+ 
+\begin_inset Formula $z_{pdr}=1$
+\end_inset
+
+ means that a rule of type 
 \begin_inset Formula $r$
 \end_inset
 
@@ -290,6 +298,27 @@ Auxiliary decision variables
 \end_inset
 
 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+The day, when the rule was violated has mainly a technical meaning.
+ We select the day in such a way that it better fits the mathematics.
+ For example, when a worker works 11 days in a row, this violates 
+\begin_inset Quotes eld
+\end_inset
+
+no more than 10 days in a row
+\begin_inset Quotes erd
+\end_inset
+
+ in the very last day, but in our mathematical model, to simplify the model,
+ we can assume that this rule is violated in the very first day.
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -302,7 +331,7 @@ Auxiliary decision variables
 \begin_inset Formula $p$
 \end_inset
 
- has a free day on the day 
+ has a free day on day 
 \begin_inset Formula $d$
 \end_inset
 
@@ -347,7 +376,7 @@ The cost function to minimize is
 \begin_layout Standard
 \begin_inset Formula 
 \[
-c_{\text{under}}\sum_{d\in D,s\in S}\Big(D_{ds}-\sum_{p\in P}x_{pds}\Big)+c_{\text{rules}}\sum_{p\in P,d\in D,r\in R}z_{pdr},
+costs=-c_{\text{under}}\sum_{d\in D,s\in S}\Big(D_{ds}-\sum_{p\in P}x_{pds}\Big)+c_{\text{rules}}\sum_{p\in P,d\in D,r\in R}z_{pdr},
 \]
 
 \end_inset
@@ -356,17 +385,17 @@ Because
 \begin_inset Formula $D_{ds}$
 \end_inset
 
- are constant, it is equivalent to minimize the function, because 
+ are constant, it is equivalent to minimize the function 
 \begin_inset Formula 
 \begin{equation}
-costs=-c_{\text{under}}\sum_{p\in P,d\in D}\sum_{s\in S}x_{pds}+c_{\text{rules}}\sum_{p\in P,d\in D,r\in R}z_{pr},\label{eq:costs-function}
+costs=-c_{\text{under}}\sum_{p\in P,d\in D}\sum_{s\in S}x_{pds}+c_{\text{rules}}\sum_{p\in P,d\in D,r\in R}z_{pr}.\label{eq:costs-function}
 \end{equation}
 
 \end_inset
 
 Here it is important not to assign more employees to a shift than the demand
  requires.
- Otherwise the optimizer can try 
+ Otherwise the optimizer can try to 
 \begin_inset Quotes gld
 \end_inset
 
@@ -418,7 +447,7 @@ name "sec:MIP"
 Minimize 
 \begin_inset Formula 
 \[
-costs=-c_{\text{under}}\sum_{p\in P,d\in D}\sum_{s\in S}x_{pds}+c_{\text{rules}}\sum_{p\in P,r\in R}z_{pr},
+costs=-c_{\text{under}}\sum_{p\in P,d\in D}\sum_{s\in S}x_{pds}+c_{\text{rules}}\sum_{p\in P,r\in R}z_{pr}
 \]
 
 \end_inset
@@ -427,7 +456,8 @@ under the constraints:
 \end_layout
 
 \begin_layout Standard
-Every employee must have a free day, early shift, late shift or night shift
+In every day, every employee must has a free day, an early shift, a late
+ shift or a night shift
 \end_layout
 
 \begin_layout Standard
@@ -438,7 +468,7 @@ f_{pd}=1-\sum_{s\in S}x_{pds}\qquad\forall p\in P,d\in D.\label{eq:free-day-1}
 
 \end_inset
 
-Maximal number of employees per shift
+The maximal number of employees per shift is never higher than Demand
 \end_layout
 
 \begin_layout Standard
@@ -477,8 +507,8 @@ x_{pdL}+x_{p(d+1)E} & \leq1\qquad p\in P,d\in D\setminus\{\text{last day}\},\lab
 
 \end_inset
 
-Free day after working four days in a row or two free days after working
- eight days in a row.
+An employee get a free day after working four days in a row or the employee
+ get two free days after working eight days in a row
 \end_layout
 
 \begin_layout Standard
@@ -511,7 +541,7 @@ f_{pd}+f_{pd+1}+f_{pd+2}+f_{pd+3}-f_{pd+4}\leq4-a_{pd4}\qquad D\setminus\{\text{
 
 \end_inset
 
-Work no more than 8 days within 14 days.
+Work no more than 8 days within 14 days
 \end_layout
 
 \begin_layout Standard
@@ -545,8 +575,7 @@ A person
 \begin_inset Formula $p$
 \end_inset
 
- has a free day if it does not have early, late or night shift and one shift
- per day per person or a free day
+ has a free day if and only if she does not have early, late or night shift
 \begin_inset Formula 
 \begin{equation}
 f_{pd}=1-\sum_{s\in S}x_{pds}\qquad\forall p\in P,d\in D.\label{eq:free-day}
@@ -574,12 +603,12 @@ Do not supply more persons than necessary
 \end_layout
 
 \begin_layout Subsection
-Shift constraints
+Shift-type constraints
 \end_layout
 
 \begin_layout Standard
-We consider shift constrains as hard constrains and do not allow to break
- them.
+We consider shift-type constrains as hard constrains.
+ We do not allow to break them.
 \end_layout
 
 \begin_layout Standard
@@ -587,7 +616,7 @@ For every person
 \begin_inset Formula $p\in P$
 \end_inset
 
- there are special rules how to select a shift.
+ there are special rules to select a shift.
  
 \begin_inset Formula $x_{pds}=1$
 \end_inset
@@ -618,7 +647,15 @@ noprefix "false"
 
 \end_inset
 
- we can often omit exclusive or requirements.
+ we can omit 
+\begin_inset Quotes eld
+\end_inset
+
+exclusive or
+\begin_inset Quotes erd
+\end_inset
+
+ requirements for shift types.
  That means for the expression 
 \begin_inset Quotes gld
 \end_inset
@@ -668,7 +705,7 @@ This expression is equivalent to
 \begin_inset Quotes gld
 \end_inset
 
-Auf einen Frühdienst folgt am nächsten kein Nachtdienst.
+Auf einen Frühdienst folgt am nächsten Tag kein Nachtdienst.
 \begin_inset Quotes grd
 \end_inset
 
@@ -730,7 +767,7 @@ Auf einen Spätdienst folgt aber kein Frühdienst
 \begin_inset Quotes grd
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
@@ -758,7 +795,7 @@ Auf einen Nachtdienst folgt am nächsten Tag nur ein weiterer Nachtdienst
 \begin_inset Quotes grd
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
@@ -773,7 +810,7 @@ x_{pdN}\rightarrow\left(x_{p(d+1)N}\lor(f_{p(d+1)}\land f_{p(d+2)})\right).
 
 \end_inset
 
-We convert this expression into conjunctive normal form
+We convert this expression into a conjunctive normal form
 \begin_inset Formula 
 \begin{align*}
  & \lnot x_{pdN}\lor x_{p(d+1)N}\lor(f_{p(d+1)}\land f_{p(d+2)})\\
@@ -812,12 +849,13 @@ Eight-or-four rule
 \end_layout
 
 \begin_layout Standard
-This is a combination of four-days-in-a-row or eight-days-in-a-row rulse.
+This is a combination of four-days-in-a-row or eight-days-in-a-row rules.
 \end_layout
 
 \begin_layout Standard
 The four-days-in-a-row rule is: "Nach 4 geleisteten Schichten hat der MA
- minimum einen Tag frei." 
+ minimum einen Tag frei".
+ 
 \end_layout
 
 \begin_layout Standard
@@ -858,14 +896,14 @@ f_{pd}+f_{pd+1}+f_{pd+2}+f_{pd+3}-f_{pd+4}\leq3.\label{eq:for-days-in-a-row-rule
 
 \begin_layout Standard
 Eight-days-in-a-row rule: "Nach 8 geleisteten Schichten hat der MA minimum
- zwei Tage frei"
+ zwei Tage frei".
 \end_layout
 
 \begin_layout Standard
 Similarly to the four-days-in-a-row rule it can be expressed as
 \begin_inset Formula 
 \begin{equation}
-\sum_{i=0}^{7}f_{pd+i}-f_{pd+8}-f_{pd+9}\leq6\label{eq:eight-days-in-a-row-rule}
+\sum_{i=0}^{7}f_{pd+i}-f_{pd+8}-f_{pd+9}\leq6.\label{eq:eight-days-in-a-row-rule}
 \end{equation}
 
 \end_inset
@@ -914,7 +952,7 @@ noprefix "false"
  It holds 
 \begin_inset Formula 
 \[
-a_{d4}+a_{d8}+z_{pd4\text{or}8}=1\qquad D\setminus\{\text{last 9 days}\}
+a_{d4}+a_{d8}+z_{pd4\text{or}8}=1\qquad D\setminus\{\text{last 9 days}\}.
 \]
 
 \end_inset
@@ -943,7 +981,7 @@ and
 \end_layout
 
 \begin_layout Subsection
-Maximal number of shift within 14 days
+Maximal number of shifts within 14 days
 \end_layout
 
 \begin_layout Standard
@@ -957,7 +995,7 @@ Maximal number of shift within 14 days
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\sum_{i=0}^{14}f_{pd+i}\geq4-4z_{pd14}\qquad\forall p\in P,d\in D\setminus\{\text{last 13 days}\}
+\sum_{i=0}^{14}f_{pd+i}\geq4-4z_{pd14}\qquad\forall p\in P,d\in D\setminus\{\text{last 13 days}\}.
 \]
 
 \end_inset
