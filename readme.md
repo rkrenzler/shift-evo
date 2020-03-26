@@ -27,4 +27,7 @@ After generation 1041, you will get an optimal solution. The script will write i
 
     in main.py.
 
+## Notes
+[General notes and ideas in German](doc/notes.md)
+
 
