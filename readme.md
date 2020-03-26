@@ -4,6 +4,11 @@ I tested this code on Ubuntu 18.04.
 
 To run the optimizer you need python packages deap, pandas and numpy.
 
+
+## Remark
+I will probably move the project to gitlab for better support of wiki
+
+
 ## How to start
 
 run
