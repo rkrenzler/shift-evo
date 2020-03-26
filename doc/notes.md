@@ -24,17 +24,21 @@ Wir brauche eine sehr gute Dokumentation. Ohne Dokumentation haben wir keine Ska
 
 ## Technische TODOs
 
-Wir brauchen eine Schnittstelle zwischen IT und dem Optiemerer.
+* Wir brauchen eine Schnittstelle zwischen IT und dem Optimierungsmodul.
 
-Wir brauchen eine Variante von Software, die auch ohne Internet funktioniert.
+* Wir brauchen einen nodulären Prototypen mit einem Platzhalter für den Optimierungsmodul.
 
+* Wir brauchen eine Variante von Software, die auch ohne Internet funktioniert.
+
+* Ich muss noch manuelle Einschränkungen in den evolutionären Algorithmus einbauen. So können Menschen den Algorithmus übersteuern. So können Entscheidungen aus der Vergangenheit mitberücksichtigt werden. So kann der Algorithmus ein großes Planungsproblem in kleinen Stückchen lösen.
 
 ## Neue mathematische Ideen:
 
-Algorithmen mischen:
+### Algorithmen mischen:
 
  1. Ein evolutionärer Algorithmus erstellt einen langfristigen Plan. (Etwa: eine Stunde lang einen Monatsplan berechnen). Dann fließen diese  Ergebnisse im Form einer Empfehlung in den Priorisierungalgorithmus.
  
- 2. Der Mensch nutzt am nächsten den Tag Priorisierungsalgorithmus, um Schichten für den nachfolgenden Tag zu planen und den heutigen Plan zu korrigieren.
+ 2. Der Mensch nutzt am nächsten den Tag den Priorisierungsalgorithmus, um Schichten für den nachfolgenden Tag zu planen und den heutigen Plan zu korrigieren.
 
-Die weniger flexiblen MIP-Algorithmen können wir zur Erstellung von Anfangslösungen nutzen. Diese Anfangslösungen jagen wir dann durch den evolutionären Algorithmus.
+
+
