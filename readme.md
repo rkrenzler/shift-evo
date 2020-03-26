@@ -6,7 +6,7 @@ To run the optimizer you need python packages deap, pandas and numpy.
 
 
 ## Remark
-I will probably move the project to gitlab for better support of wiki
+I will move the documentation to [gitlab](https://gitlab.com/rkrenzler/hostpital-roster/-/wikis/home). It has a better support of wiki documentation and is open-source.
 
 
 ## How to start
