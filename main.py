@@ -33,7 +33,7 @@ PLAN_CSV_FILE = 'plan.csv'  # Here we store the resulting file.
 # Medium problem
 problem = problem_mod.ProblemBuilder.generate(nemp=40, ndays=30, npar=6)
 
-POPULATION_SIZE = 100
+POPULATION_SIZE = 20
 MAX_GENERATIONS = 10000
 MAX_NO_IMPROVEMENTS = 200
 # Set it to None if you do not want to store intermediate statistics like for example
@@ -50,7 +50,7 @@ toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.in
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutUniformInt, low=helper.min_decision(),
-                 up=helper.max_decision(), indpb=1.0 / len(initial_solution))
+                 up=helper.max_decision(), indpb=0.5 / len(initial_solution))
 toolbox.register("evaluate", helper.evaluate)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
@@ -73,7 +73,7 @@ stats.register("Min", numpy.min)
 T = len(initial_solution)
 stats.register("MinTotal", lambda x: numpy.min(x) * T)  # Minimal total costs and not average.
 stats.register("Max", numpy.max)
-pop, logbook = metaalgorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.1, ngen=MAX_GENERATIONS,
+pop, logbook = metaalgorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.5, ngen=MAX_GENERATIONS,
                                   maxnoimprovments=MAX_NO_IMPROVEMENTS, stop_if_less = 0.0001,
                                   stats=stats, halloffame=hof, verbose=True)
 #pop, logbook = deap.algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=MAX_GENERATIONS,
