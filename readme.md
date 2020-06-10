@@ -1,4 +1,7 @@
+
 # Evolutionary algorithm for plan optimizations.
+
+**This project was a part of the German hackaton against COVID-19. The project was discontinued.**
 
 I tested this code on Ubuntu 18.04.
 
